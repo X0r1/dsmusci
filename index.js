@@ -27,7 +27,7 @@ Structures.extend('Guild', Guild => {
 
 const client = new CommandoClient({
   commandPrefix: prefix,
-  owner: '183647046564184065' // change this to your Discord user ID
+  owner: '406541575615938570' // change this to your Discord user ID
 });
 
 client.registry
@@ -52,12 +52,6 @@ client.once('ready', () => {
     type: 'WATCHING',
     url: 'https://github.com/galnir/Master-Bot'
   });
-});
-
-client.on('guildMemberAdd', member => {
-  const channel = member.guild.channels.find(c => c.name === 'general'); // change this to the channel name you want to send the greeting to
-  if (!channel) return;
-  channel.send(`Welcome ${member}!`);
 });
 
 client.login(process.env.TOKEN);
