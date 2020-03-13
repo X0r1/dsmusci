@@ -1,0 +1,8 @@
+{
+  "prefix": "!",  // You can change the prefix to whatever you want it doesn't have to be - !
+  "tenorAPI": "HXW3TX4E0KTL",
+  "newsAPI": "e5fff600e35e41be8e8c7df5a009fc4f",
+  "youtubeAPI": "AIzaSyCb0xQCqZNOMtHu7j_ruZE1M3RwTm4jQb8",
+  "yandexAPI": "trnsl.1.1.20200313T145434Z.188b44254778dcab.b9b390252db81387b8d4be7725886d4ec7f5e80b",
+  "geniusLyricsAPI": "JVcSt6PFsyeJQkb3-uNAElgMtCtUl2XBI5WEQ-ho8AFGOkP5Xwm8U2Zd144BmrpF"
+}
