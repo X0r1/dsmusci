@@ -1,42 +1,63 @@
-const { CommandoClient, SQLiteProvider } = require('discord.js-commando');
+const { CommandoClient } = require('discord.js-commando');
+const { Structures } = require('discord.js');
 const path = require('path');
-const config = require('./configs/app.json');
-const YoutubePlayer = require('./services/player/youtube-player');
-const sqlite = require('sqlite');
-const TimeArgumentType = require('./arguments/time-argument');
-const Youtube = require('@mindaugaskasp/node-youtube');
-const EventLoaderService = require('./services/event-loader-service');
-require('dotenv/config');
-const http = require('http');
-const port = process.env.PORT || 3000;
-http.createServer().listen(port);
+const { prefix } = require('./config.json');
 
-sqlite.open(path.join(`${__dirname}/sqlite`, "database.sqlite3")).then((db) => {
-    client.setProvider(new SQLiteProvider(db));
+Structures.extend('Guild', Guild => {
+  class MusicGuild extends Guild {
+    constructor(client, data) {
+      super(client, data);
+      this.musicData = {
+        queue: [],
+        isPlaying: false,
+        nowPlaying: null,
+        songDispatcher: null,
+        volume: 1
+      };
+      this.triviaData = {
+        isTriviaRunning: false,
+        wasTriviaEndCalled: false,
+        triviaQueue: [],
+        triviaScore: new Map()
+      };
+    }
+  }
+  return MusicGuild;
 });
 
 const client = new CommandoClient({
-    commandPrefix: config.bot.default_cmd_prefix,
-    unknownCommandResponse: false,
-    owner: config.bot.owners,
-    disableEveryone: true
+  commandPrefix: prefix,
+  owner: '183647046564184065' // change this to your Discord user ID
 });
 
-client.config = config;
-client.music = new YoutubePlayer(new Youtube(config.youtube.token, config.youtube.base_url));
-
-new EventLoaderService(client).load();
-
 client.registry
-    .registerDefaultTypes()
-    .registerGroups([
-        ['music', 'Music playback commands']
-    ])
-    .registerDefaultGroups()
-    .registerDefaultCommands()
-    .registerTypes([TimeArgumentType])
-    .registerCommandsIn(path.join(__dirname, 'commands'));
+  .registerDefaultTypes()
+  .registerGroups([
+    ['music', 'Music Command Group'],
+    ['gifs', 'Gif Command Group'],
+    ['other', 'random types of commands group'],
+    ['guild', 'guild related commands']
+  ])
+  .registerDefaultGroups()
+  .registerDefaultCommands({
+    eval: false,
+    prefix: false,
+    commandState: false
+  })
+  .registerCommandsIn(path.join(__dirname, 'commands'));
 
-process.on('unhandledRejection', console.error);
+client.once('ready', () => {
+  console.log('Ready!');
+  client.user.setActivity('!help', {
+    type: 'WATCHING',
+    url: 'https://github.com/galnir/Master-Bot'
+  });
+});
 
-client.login(process.env.token);
+client.on('guildMemberAdd', member => {
+  const channel = member.guild.channels.find(c => c.name === 'general'); // change this to the channel name you want to send the greeting to
+  if (!channel) return;
+  channel.send(`Welcome ${member}!`);
+});
+
+client.login(process.env.TOKEN);

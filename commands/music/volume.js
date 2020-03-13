@@ -1,43 +1,42 @@
 const { Command } = require('discord.js-commando');
 
 module.exports = class VolumeCommand extends Command {
-    constructor(client) {
-        super(client, {
-            name: 'volume',
-            aliases: ['sound'],
-            group: 'music',
-            memberName: 'volume',
-            description: 'Sets music player volume',
-            examples: ['volume', 'volume 50'],
-            guildOnly: true,
-            args: [
-                {
-                    key: 'volume',
-                    prompt: 'Enter volume value between 0 - 100',
-                    type: 'integer',
-                    validate: volume => {
-                        return volume <= 100 && volume >= 0;
-                    }
-                }
-            ],
-        });
-        this.client.music.on('volume', async (text, guild, channel) => {
-            (await channel.send(text)).delete(12000);
-        });
-    }
-
-    /**
-     * @param msg
-     * @param args
-     * @param fromPattern
-     * @returns {Promise.<Message|Message[]>}
-     */
-    async run(msg, args, fromPattern) {
-        try {
-            this.client.music.setVolume(msg.guild, args.volume, msg.channel);
-        } catch (e) {
-            console.log(e);
-            return msg.say('Something went horribly wrong! Please try again later.')
+  constructor(client) {
+    super(client, {
+      name: 'volume',
+      aliases: ['change-volume'],
+      group: 'music',
+      memberName: 'volume',
+      guildOnly: true,
+      description: 'Adjust song volume',
+      throttling: {
+        usages: 1,
+        duration: 5
+      },
+      args: [
+        {
+          key: 'wantedVolume',
+          prompt: 'What volume would you like to set? from 1 to 200',
+          type: 'integer',
+          validate: wantedVolume => wantedVolume >= 1 && wantedVolume <= 200
         }
+      ]
+    });
+  }
+
+  run(message, { wantedVolume }) {
+    const voiceChannel = message.member.voice.channel;
+    if (!voiceChannel) return message.reply('Join a channel and try again');
+
+    if (
+      typeof message.guild.musicData.songDispatcher == 'undefined' ||
+      message.guild.musicData.songDispatcher == null
+    ) {
+      return message.reply('There is no song playing right now!');
     }
+    const volume = wantedVolume / 100;
+    message.guild.musicData.volume = volume;
+    message.guild.musicData.songDispatcher.setVolume(volume);
+    message.say(`Current volume is: ${wantedVolume}%`);
+  }
 };

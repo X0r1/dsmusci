@@ -1,14 +1,14 @@
 const { Command } = require('discord.js-commando');
 
-module.exports = class LeaveCommand extends Command {
+module.exports = class SkipAllCommand extends Command {
   constructor(client) {
     super(client, {
-      name: 'leave',
-      aliases: ['end'],
+      name: 'skipall',
+      aliases: ['skip-all'],
+      memberName: 'skipall',
       group: 'music',
-      memberName: 'leave',
-      guildOnly: true,
-      description: 'Leaves voice channel if in one'
+      description: 'Skip all songs in queue',
+      guildOnly: true
     });
   }
 
@@ -25,7 +25,7 @@ module.exports = class LeaveCommand extends Command {
     if (!message.guild.musicData.queue)
       return message.say('There are no songs in queue');
     message.guild.musicData.songDispatcher.end();
-    message.guild.musicData.queue.length = 0;
+    message.guild.musicData.queue.length = 0; // clear queue
     return;
   }
 };

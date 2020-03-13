@@ -1,34 +1,27 @@
 const { Command } = require('discord.js-commando');
 
 module.exports = class SkipCommand extends Command {
-    constructor(client) {
-        super(client, {
-            name: 'skip',
-            aliases: ['next'],
-            group: 'music',
-            memberName: 'skip',
-            description: 'Skips current track playback',
-            examples: ['skip', 'next'],
-            guildOnly: true,
-        });
-        this.client.music.on('skip', async (text, guild, channel) => {
-           (await channel.send(text)).delete(12000);
-        });
-    }
+  constructor(client) {
+    super(client, {
+      name: 'skip',
+      aliases: ['skip-song', 'advance-song'],
+      memberName: 'skip',
+      group: 'music',
+      description: 'Skip the current playing song',
+      guildOnly: true
+    });
+  }
 
-    /**
-     *
-     * @param msg
-     * @param args
-     * @param fromPattern
-     * @returns {Promise.<Message|Message[]>}
-     */
-    run(msg, args, fromPattern) {
-        try {
-            this.client.music.skip(msg.guild, msg.channel)
-        } catch (e) {
-            console.log(e);
-            return msg.say('Something went horribly wrong! Please try again later.');
-        }
+  run(message) {
+    const voiceChannel = message.member.voice.channel;
+    if (!voiceChannel) return message.reply('Join a channel and try again');
+
+    if (
+      typeof message.guild.musicData.songDispatcher == 'undefined' ||
+      message.guild.musicData.songDispatcher == null
+    ) {
+      return message.reply('There is no song playing right now!');
     }
+    message.guild.musicData.songDispatcher.end();
+  }
 };

@@ -1,22 +1,25 @@
 const { Command } = require('discord.js-commando');
 
-module.exports = class RemoveSongCommand extends Command {
+module.exports = class SkipToCommand extends Command {
   constructor(client) {
     super(client, {
-      name: 'remove',
-      memberName: 'remove',
+      name: 'skipto',
+      memberName: 'skipto',
       group: 'music',
-      description: 'Remove a specific song from queue',
+      description:
+        'Skip to a specific song in the queue, provide the song number as an argument',
       guildOnly: true,
       args: [
         {
           key: 'songNumber',
-          prompt: 'What song number do you want to remove from queue?',
+          prompt:
+            'What is the number in queue of the song you want to skip to?, it needs to be greater than 1',
           type: 'integer'
         }
       ]
     });
   }
+
   run(message, { songNumber }) {
     if (songNumber < 1 && songNumber >= message.guild.musicData.queue.length) {
       return message.reply('Please enter a valid song number');
@@ -31,7 +34,11 @@ module.exports = class RemoveSongCommand extends Command {
       return message.reply('There is no song playing right now!');
     }
 
-    message.guild.musicData.queue.splice(songNumber - 1, 1);
-    return message.say(`Removed song number ${songNumber} from queue`);
+    if (message.guild.musicData.queue < 1)
+      return message.say('There are no songs in queue');
+
+    message.guild.musicData.queue.splice(0, songNumber - 1);
+    message.guild.musicData.songDispatcher.end();
+    return;
   }
 };
