@@ -3,9 +3,9 @@ const { Command } = require('discord.js-commando');
 module.exports = class SkipCommand extends Command {
   constructor(client) {
     super(client, {
-      name: 'skip',
+      name: 's',
       aliases: ['skip-song', 'advance-song'],
-      memberName: 'skip',
+      memberName: 's',
       group: 'music',
       description: 'Skip the current playing song',
       guildOnly: true
